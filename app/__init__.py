@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.utils.db import engine, Base
-from app.api import activity_router, user_router
+from app.api import activity_router, user_router, auth_router
 from app.config.config import config_by_name
 
 def create_app(config_name: str):
@@ -16,6 +16,7 @@ def create_app(config_name: str):
     # 라우터 등록
     app.include_router(activity_router.router)
     app.include_router(user_router.router)
+    app.include_router(auth_router.router)
 
     @app.get("/health")
     def health_check():
