@@ -5,13 +5,12 @@ from typing import List
 from app.schemas import user_schema
 from app.models import user as user_model
 from app.utils.db import get_db
+from app.helper import user_helper
 
 router = APIRouter(
     prefix="/users",
     tags=["Users"]
 )
-
-from app.helper import user_helper
 
 @router.post("/", response_model=user_schema.User)
 def create_user(user: user_schema.UserCreate, db: Session = Depends(get_db)):
@@ -41,3 +40,13 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
     if db_user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return db_user
+
+@router.get("/{user_id}/guardians", response_model=List[user_schema.User])
+def get_guardians(user_id: int, db: Session = Depends(get_db)):
+    guardians = user_helper.get_guardians_of_senior(db=db, senior_id=user_id)
+    return guardians
+
+@router.get("/{user_id}/dependents", response_model=List[user_schema.User])
+def get_dependents(user_id: int, db: Session = Depends(get_db)):
+    dependents = user_helper.get_seniors_of_guardian(db=db, guardian_id=user_id)
+    return dependents

@@ -6,11 +6,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# TODO: 추후 환경 변수에서 데이터베이스 접속 정보를 가져오도록 수정해야 합니다.
-# from app.config.config import Config
-
-# SQLALCHEMY_DATABASE_URL = Config.DATABASE_URL
-
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 engine = create_engine(DATABASE_URL)
@@ -23,4 +18,5 @@ def get_db():
     try:
         yield db
     finally:
+        db.rollback() # 예외 발생 시 롤백
         db.close()

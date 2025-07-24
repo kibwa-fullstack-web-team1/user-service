@@ -14,9 +14,9 @@ def create_app(config_name: str):
     Base.metadata.create_all(bind=engine)
 
     # 라우터 등록
-    app.include_router(activity_router.router)
-    app.include_router(user_router.router)
-    app.include_router(auth_router.router)
+    app.include_router(activity_router)
+    app.include_router(user_router)
+    app.include_router(auth_router)
 
     @app.get("/health")
     def health_check():
