@@ -5,6 +5,7 @@ from datetime import datetime
 class UserBase(BaseModel):
     username: str
     email: str
+    phone_number: Optional[str] = None # 전화번호 필드 추가
     hashed_password: str # 추가
 
 class UserCreate(UserBase):
@@ -13,6 +14,7 @@ class UserCreate(UserBase):
 class UserUpdate(BaseModel):
     username: Optional[str] = None
     email: Optional[str] = None
+    phone_number: Optional[str] = None # 전화번호 필드 추가
     hashed_password: Optional[str] = None
 
 class User(UserBase):
