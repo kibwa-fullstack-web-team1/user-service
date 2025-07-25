@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.utils.db import engine, Base
-from app.api import activity_router, user_router, auth_router
+from app.api import user_router, auth_router
 from app.config.config import config_by_name
 
 def create_app(config_name: str):
@@ -14,7 +14,6 @@ def create_app(config_name: str):
     Base.metadata.create_all(bind=engine)
 
     # 라우터 등록
-    app.include_router(activity_router)
     app.include_router(user_router)
     app.include_router(auth_router)
 
