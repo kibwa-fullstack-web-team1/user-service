@@ -39,7 +39,7 @@ def delete_user(db: Session, user_id: int):
         db.commit()
     return db_user
 
-async def get_guardians_for_senior(db: Session, senior_id: int) -> List[Dict[str, Any]]:
+def get_guardians_for_senior(db: Session, senior_id: int) -> List[Dict[str, Any]]:
     # senior_id에 해당하는 사용자가 senior 역할인지 확인
     senior_user = db.query(user_model.User).filter(user_model.User.id == senior_id, user_model.User.role == user_model.UserRole.senior).first()
     if not senior_user:

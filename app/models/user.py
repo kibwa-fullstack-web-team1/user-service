@@ -13,6 +13,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True, nullable=False)
     email = Column(String, unique=True, index=True, nullable=False)
+    phone_number = Column(String, unique=True, index=True, nullable=True) # 전화번호 필드 추가
     hashed_password = Column(String, nullable=False)
     full_name = Column(String, index=True)
     role = Column(Enum(UserRole), default=UserRole.senior, nullable=False)
