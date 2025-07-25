@@ -1,17 +1,12 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-import os
-from dotenv import load_dotenv
+from app.config.config import config_by_name
 
-load_dotenv()
+# 환경 설정 로드 (예: development 환경)
+config = config_by_name['development']
 
-# TODO: 추후 환경 변수에서 데이터베이스 접속 정보를 가져오도록 수정해야 합니다.
-# from app.config.config import Config
-
-# SQLALCHEMY_DATABASE_URL = Config.DATABASE_URL
-
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = config.DATABASE_URL
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
