@@ -41,3 +41,10 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
     if db_user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return db_user
+
+@router.get("/{senior_id}/guardians", response_model=List[user_schema.GuardianInfo])
+async def get_guardians_for_senior(senior_id: int, db: Session = Depends(get_db)):
+    guardians = await user_helper.get_guardians_for_senior(db=db, senior_id=senior_id)
+    if not guardians:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Guardians not found for this senior")
+    return guardians
