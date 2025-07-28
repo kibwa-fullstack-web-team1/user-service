@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
+from app.models.user import UserRole
 from starlette.concurrency import run_in_threadpool # run_in_threadpool 임포트
 
 from app.schemas import user_schema
@@ -26,8 +27,8 @@ async def get_user(user_id: int, db: Session = Depends(get_db)):
     return user
 
 @router.get("/", response_model=List[user_schema.User])
-async def get_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return await run_in_threadpool(user_helper.get_users, db=db, skip=skip, limit=limit)
+async def get_users(skip: int = 0, limit: int = 100, role: Optional[UserRole] = None, db: Session = Depends(get_db)):
+    return await run_in_threadpool(user_helper.get_users, db=db, skip=skip, limit=limit, role=role)
 
 @router.put("/{user_id}", response_model=user_schema.User)
 async def update_user(user_id: int, user: user_schema.UserUpdate, db: Session = Depends(get_db)):
