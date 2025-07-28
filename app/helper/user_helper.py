@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session, joinedload
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 from app.models import user as user_model
 from app.models import relationship_type as relationship_type_model # RelationshipType 모델 임포트
