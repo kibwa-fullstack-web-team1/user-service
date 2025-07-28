@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session, joinedload
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 from app.models import user as user_model
 from app.models import relationship_type as relationship_type_model # RelationshipType 모델 임포트
@@ -18,8 +18,11 @@ def get_user(db: Session, user_id: int):
 def get_user_by_email(db : Session, email : str) :
     return db.query(user_model.User).filter(user_model.User.email == email).first()
 
-def get_users(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(user_model.User).offset(skip).limit(limit).all()
+def get_users(db: Session, skip: int = 0, limit: int = 100, role: Optional[user_model.UserRole] = None):
+    query = db.query(user_model.User)
+    if role:
+        query = query.filter(user_model.User.role == role)
+    return query.offset(skip).limit(limit).all()
 
 def update_user(db: Session, user_id: int, user_update: user_schema.UserUpdate):
     db_user = db.query(user_model.User).filter(user_model.User.id == user_id).first()
