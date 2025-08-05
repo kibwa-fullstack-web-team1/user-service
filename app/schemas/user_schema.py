@@ -39,3 +39,12 @@ class GuardianInfo(BaseModel):
     relationship_display_name: str
 
     model_config = ConfigDict(from_attributes=True)
+
+class SeniorInfo(BaseModel):
+    id: int
+    username: str
+    email: str
+    phone_number: Optional[str] = None
+    relationship_display_name: str
+
+    model_config = ConfigDict(from_attributes=True)

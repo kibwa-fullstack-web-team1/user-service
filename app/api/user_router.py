@@ -44,6 +44,13 @@ async def delete_user(user_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return db_user
 
+@router.get("/guardian/{guardian_id}/seniors", response_model=List[user_schema.SeniorInfo])
+async def get_seniors_for_guardian(guardian_id: int, db: Session = Depends(get_db)):
+    seniors = await run_in_threadpool(user_helper.get_seniors_by_guardian_id, db=db, guardian_id=guardian_id)
+    if not seniors:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Seniors not found for this guardian.")
+    return seniors
+
 @router.get("/{senior_id}/guardians", response_model=List[user_schema.GuardianInfo])
 async def get_guardians_for_senior(senior_id: int, db: Session = Depends(get_db)):
     guardians = await run_in_threadpool(user_helper.get_guardians_for_senior, db=db, senior_id=senior_id)
