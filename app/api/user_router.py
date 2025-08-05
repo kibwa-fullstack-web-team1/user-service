@@ -57,3 +57,11 @@ async def get_guardians_for_senior(senior_id: int, db: Session = Depends(get_db)
     if not guardians:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Guardians not found for this senior")
     return guardians
+
+@router.post("/family-relationships", response_model=user_schema.FamilyRelationshipResponse)
+async def create_family_relationship(
+    relationship: user_schema.FamilyRelationshipCreate,
+    db: Session = Depends(get_db)
+):
+    db_relationship = await run_in_threadpool(user_helper.create_family_relationship, db=db, relationship=relationship)
+    return db_relationship
