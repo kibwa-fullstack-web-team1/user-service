@@ -29,7 +29,10 @@ def update_user(db: Session, user_id: int, user_update: user_schema.UserUpdate):
     if db_user:
         update_data = user_update.model_dump(exclude_unset=True)
         for key, value in update_data.items():
-            setattr(db_user, key, value)
+            if key == "role": # role 필드 업데이트 시 Enum 값으로 변환
+                setattr(db_user, key, user_model.UserRole(value))
+            else:
+                setattr(db_user, key, value)
         db.add(db_user)
         db.commit()
         db.refresh(db_user)
@@ -101,3 +104,14 @@ def get_seniors_by_guardian_id(db: Session, guardian_id: int) -> List[Dict[str, 
             "relationship_display_name": rel_type.display_name_ko # 관계 표시명 포함
         })
     return result
+
+def create_family_relationship(db: Session, relationship: user_schema.FamilyRelationshipCreate):
+    db_relationship = user_model.FamilyRelationship(
+        senior_id=relationship.senior_id,
+        guardian_id=relationship.guardian_id,
+        relationship_type_id=relationship.relationship_type_id
+    )
+    db.add(db_relationship)
+    db.commit()
+    db.refresh(db_relationship)
+    return db_relationship
