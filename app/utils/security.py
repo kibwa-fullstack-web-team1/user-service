@@ -2,6 +2,7 @@ import bcrypt
 import jwt
 from datetime import datetime, timedelta
 import os
+from jwt.exceptions import ExpiredSignatureError, InvalidTokenError, DecodeError
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 ALGORITHM = "HS256"
@@ -24,5 +25,22 @@ def decode_access_token(token : str) :
     try : 
         payload = jwt.decode(token, SECRET_KEY, algorithms = [ALGORITHM])
         return payload
-    except jwt.PyJWTError : 
-        return None
+    except ExpiredSignatureError:
+        raise ExpiredSignatureError("토큰이 만료되었습니다.")
+    except DecodeError:
+        raise DecodeError("토큰 디코딩에 실패했습니다.")
+    except InvalidTokenError:
+        raise InvalidTokenError("유효하지 않은 토큰입니다.")
+    except Exception as e:
+        raise Exception(f"토큰 검증 중 오류가 발생했습니다: {str(e)}")
+
+def is_token_expired(token: str) -> bool:
+    """토큰 만료 여부 확인"""
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        exp = payload.get("exp")
+        if exp is None:
+            return True
+        return datetime.utcnow().timestamp() > exp
+    except:
+        return True
