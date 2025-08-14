@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.utils.db import engine, Base
+from app.utils.db import Base, init_db
 from app.api import user_router, auth_router
 from app.config.config import config_by_name
 
@@ -21,6 +21,10 @@ def create_app(config_name: str):
     app.config = config
 
     # 데이터베이스 초기화
+    init_db()
+    
+    # engine을 다시 가져와서 사용
+    from app.utils.db import engine
     Base.metadata.create_all(bind=engine)
 
     # 라우터 등록
