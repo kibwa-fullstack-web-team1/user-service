@@ -3,10 +3,11 @@ import jwt
 from datetime import datetime, timedelta
 import os
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError, DecodeError
+from fastapi import HTTPException, status
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))
 
 def hash_password(password : str) -> str :
     return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
@@ -26,13 +27,29 @@ def decode_access_token(token : str) :
         payload = jwt.decode(token, SECRET_KEY, algorithms = [ALGORITHM])
         return payload
     except ExpiredSignatureError:
-        raise ExpiredSignatureError("토큰이 만료되었습니다.")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="토큰이 만료되었습니다.",
+            headers={"WWW-Authenticate": "Bearer error=\"expired_token\""}
+        )
     except DecodeError:
-        raise DecodeError("토큰 디코딩에 실패했습니다.")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="토큰 디코딩에 실패했습니다.",
+            headers={"WWW-Authenticate": "Bearer error=\"invalid_token\""}
+        )
     except InvalidTokenError:
-        raise InvalidTokenError("유효하지 않은 토큰입니다.")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="유효하지 않은 토큰입니다.",
+            headers={"WWW-Authenticate": "Bearer error=\"invalid_token\""}
+        )
     except Exception as e:
-        raise Exception(f"토큰 검증 중 오류가 발생했습니다: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"토큰 검증 중 오류가 발생했습니다: {str(e)}",
+            headers={"WWW-Authenticate": "Bearer error=\"invalid_token\""}
+        )
 
 def is_token_expired(token: str) -> bool:
     """토큰 만료 여부 확인"""
