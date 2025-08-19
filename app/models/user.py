@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, func, Enum, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, func, Enum, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from app.utils.db import Base
 import enum
@@ -6,6 +6,11 @@ import enum
 class UserRole(enum.Enum):
     senior = "senior"
     guardian = "guardian"
+
+class InvitationStatus(enum.Enum):
+    pending = "pending"
+    accepted = "accepted"
+    expired = "expired"
 
 class User(Base):
     __tablename__ = "users"
@@ -35,6 +40,13 @@ class User(Base):
         foreign_keys="[FamilyRelationship.guardian_id]",
         back_populates="guardian",
         cascade="all, delete-orphan"
+    )
+
+    # 사용자가 생성한 초대코드들 (기존 invitations 테이블 사용)
+    sent_invitations = relationship(
+        "Invitation",
+        foreign_keys="[Invitation.inviter_id]",
+        back_populates="inviter"
     )
 
 
