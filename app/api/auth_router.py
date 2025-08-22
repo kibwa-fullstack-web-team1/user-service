@@ -58,7 +58,8 @@ def register(user : UserCreate, db : Session = Depends(get_db)) :
         message="회원가입이 완료되었습니다.",
         access_token=access_token,
         token_type="bearer",
-        user_role=db_user.role.value
+        user_role=db_user.role.value,
+        username=db_user.username
     )
 
 @router.post("/login", response_model = Token)
@@ -76,10 +77,11 @@ def login(login_data : UserLogin, db : Session = Depends(get_db)) :
     
     # 2024-08-18: user_role 필드 추가 - 사용자 역할을 응답에 포함
     return {
-        "access_token" : access_token, 
-        "token_type" : "bearer",
-        "user_role": getattr(user, 'role', 'user')  # 사용자 역할 추가
-    }
+            "access_token" : access_token, 
+            "token_type" : "bearer",
+            "user_role": getattr(user, 'role', 'user'),  # 사용자 역할 추가
+            "username": user.username
+        }
 
 @router.post("/logout")
 async def logout(request: Request, db: Session = Depends(get_db)):
@@ -197,7 +199,8 @@ async def verify_token(
             "user_id": user.id,
             "email": user.email,
             "role": getattr(user, 'role', 'user'),
-            "is_active": getattr(user, 'is_active', True)
+            "is_active": getattr(user, 'is_active', True),
+            "username": user.username
         }
         
     except ValueError:

@@ -69,12 +69,14 @@ class Token(BaseModel) :
     access_token : str
     token_type : str = "bearer"
     user_role: str  # 사용자 역할 추가
+    username: str # <--- ADDED
 
 class RegisterResponse(BaseModel):
     message: str = "회원가입이 완료되었습니다."
     access_token: str
     token_type: str = "bearer"
     user_role: str
+    username: str
 
 class GuardianInfo(BaseModel):
     id: int
